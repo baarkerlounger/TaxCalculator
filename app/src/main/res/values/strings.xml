@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Cost Abroad</string>
+    <string name="action_settings">Settings</string>
+    <string name="flag">flag</string>
+    <string name="grossLabel">Gross</string>
+    <string name="netLabel">Net</string>
+    <string name="inputFlagLabel">Input Flag</string>
+    <string name="inputExchangeLabel">GBP - British Pound</string>
+</resources>
