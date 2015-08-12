@@ -3,16 +3,16 @@ package baarkerlounger.com.costabroad;
 import java.math.BigDecimal;
 
 /**
- * Created by dan on 8/10/15.
+ * Created by dan on 8/10/15
  */
 class UKTaxCalculator {
 
-    final static BigDecimal TAX_FREE_THRESHOLD = BigDecimal.valueOf(10000);
-    final static BigDecimal HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(31865);
-    final static BigDecimal ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(150000);
-    final static BigDecimal BASIC_RATE = BigDecimal.valueOf(0.2);
-    final static BigDecimal HIGHER_RATE = BigDecimal.valueOf(0.4);
-    final static BigDecimal ADDITIONAL_RATE = BigDecimal.valueOf(0.45);
+    final private static BigDecimal TAX_FREE_THRESHOLD = BigDecimal.valueOf(10000);
+    final private static BigDecimal HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(31865);
+    final private static BigDecimal ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(150000);
+    final private static BigDecimal BASIC_RATE = BigDecimal.valueOf(0.2);
+    final private static BigDecimal HIGHER_RATE = BigDecimal.valueOf(0.4);
+    final private static BigDecimal ADDITIONAL_RATE = BigDecimal.valueOf(0.45);
 
     BigDecimal getUKGross(BigDecimal net){
 
