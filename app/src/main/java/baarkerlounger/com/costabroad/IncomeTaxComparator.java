@@ -15,6 +15,9 @@ import java.text.ParseException;
 
 public class IncomeTaxComparator extends AppCompatActivity {
 
+    EditText inputNet = (EditText) findViewById(R.id.inputNet);
+    EditText inputGross = (EditText) findViewById(R.id.inputGross);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +36,6 @@ public class IncomeTaxComparator extends AppCompatActivity {
 
     private void setTextBoxHandlers() {
         //Set Text watcher for the input boxes
-        EditText inputNet = (EditText) findViewById(R.id.inputNet);
         inputNet.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -49,7 +51,6 @@ public class IncomeTaxComparator extends AppCompatActivity {
             }
         });
 
-        final EditText inputGross = (EditText) findViewById(R.id.inputGross);
         inputGross.addTextChangedListener(new TextWatcher() {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -68,25 +69,21 @@ public class IncomeTaxComparator extends AppCompatActivity {
     }
 
     private void updateInputNet() {
-        EditText inputNet = (EditText) findViewById(R.id.inputNet);
-        if(inputNet.hasFocus()){
-            return;
+        if(!inputNet.hasFocus()){
+            BigDecimal inputGross = getInputGross();
+            UKTaxCalculator taxCalculator = new UKTaxCalculator();
+            BigDecimal valueNet = taxCalculator.getUKNet(inputGross);
+            setInputNet(valueNet.doubleValue());
         }
-        BigDecimal inputGross = getInputGross();
-        UKTaxCalculator taxCalculator = new UKTaxCalculator();
-        BigDecimal valueNet = taxCalculator.getUKNet(inputGross);
-        setInputNet(valueNet.doubleValue());
     }
 
     private void updateInputGross() {
-        EditText inputGross = (EditText) findViewById(R.id.inputGross);
-        if(inputGross.hasFocus()){
-            return;
+        if(!inputGross.hasFocus()){
+            BigDecimal inputNet = getInputNet();
+            UKTaxCalculator taxCalculator = new UKTaxCalculator();
+            BigDecimal valueGross = taxCalculator.getUKNet(inputNet);
+            setInputGross(valueGross.doubleValue());
         }
-        BigDecimal inputNet = getInputNet();
-        UKTaxCalculator taxCalculator = new UKTaxCalculator();
-        BigDecimal valueGross = taxCalculator.getUKNet(inputNet);
-        setInputGross(valueGross.doubleValue());
     }
 
     private void setInitialValues() {
@@ -96,21 +93,18 @@ public class IncomeTaxComparator extends AppCompatActivity {
     private void setInputDefaults() {
         BigDecimal grossDefault = BigDecimal.valueOf(30000.00);
         setInputGross(grossDefault.doubleValue());
-        EditText inputGross = (EditText) findViewById(R.id.inputGross);
-        inputGross.setSelection(grossDefault.toString().length());
         UKTaxCalculator taxCalculator = new UKTaxCalculator();
         BigDecimal netDefault = taxCalculator.getUKNet(grossDefault);
         setInputNet(netDefault.doubleValue());
     }
 
     private void setInputNet(double value){
-        EditText inputNet = (EditText) findViewById(R.id.inputNet);
         String output = convertToCurrency(value);
         inputNet.setText(output);
+        inputNet.setSelection(output.length());
     }
 
     private BigDecimal getInputNet(){
-        EditText inputNet = (EditText) findViewById(R.id.inputNet);
         String valueString = inputNet.getText().toString();
         valueString = sanitizeCurrencyString(valueString);
         try{
@@ -121,13 +115,12 @@ public class IncomeTaxComparator extends AppCompatActivity {
     }
 
     private void setInputGross(double value){
-        EditText inputGross = (EditText) findViewById(R.id.inputGross);
         String output = convertToCurrency(value);
         inputGross.setText(output);
+        inputGross.setSelection(output.length());
     }
 
     private BigDecimal getInputGross(){
-        EditText inputGross = (EditText) findViewById(R.id.inputGross);
         String valueString = inputGross.getText().toString();
         valueString = sanitizeCurrencyString(valueString);
         try{
