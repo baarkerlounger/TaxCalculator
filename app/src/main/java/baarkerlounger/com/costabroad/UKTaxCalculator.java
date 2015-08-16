@@ -7,6 +7,7 @@ import java.math.BigDecimal;
  */
 class UKTaxCalculator {
 
+    //Gross to Net Values
     final private static BigDecimal INITIAL_TAX_FREE_THRESHOLD = BigDecimal.valueOf(10600);
     final private static BigDecimal HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(31865);
     final private static BigDecimal ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(150000);
@@ -15,14 +16,26 @@ class UKTaxCalculator {
     final private static BigDecimal ADDITIONAL_RATE = BigDecimal.valueOf(0.45);
     final private static BigDecimal TAX_FREE_REDUCTION_THRESHOLD = BigDecimal.valueOf(100000);
 
+    //Net to Gross values
+    final private static BigDecimal NET_HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(27612);
+
     BigDecimal getUKGross(BigDecimal net){
 
+        BigDecimal gross = BigDecimal.valueOf(0);
         BigDecimal TAX_FREE_THRESHOLD = INITIAL_TAX_FREE_THRESHOLD;
 
         if(net.compareTo(TAX_FREE_THRESHOLD) <= 0){
             return net;
         }
-        return net;
+
+        if(net.compareTo(NET_HIGHER_RATE_THRESHOLD) <= 0){
+            gross = (net.subtract(INITIAL_TAX_FREE_THRESHOLD)).add((net.subtract(INITIAL_TAX_FREE_THRESHOLD)).multiply(BASIC_RATE))
+                    .divide((BigDecimal.valueOf(100).subtract(BASIC_RATE)));
+        }
+
+
+
+        return gross;
     }
 
     BigDecimal getUKNet(BigDecimal gross){

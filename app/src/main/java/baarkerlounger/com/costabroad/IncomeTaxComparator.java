@@ -68,6 +68,10 @@ public class IncomeTaxComparator extends AppCompatActivity {
     }
 
     private void updateInputNet() {
+        EditText inputNet = (EditText) findViewById(R.id.inputNet);
+        if(inputNet.hasFocus()){
+            return;
+        }
         BigDecimal inputGross = getInputGross();
         UKTaxCalculator taxCalculator = new UKTaxCalculator();
         BigDecimal valueNet = taxCalculator.getUKNet(inputGross);
@@ -75,6 +79,14 @@ public class IncomeTaxComparator extends AppCompatActivity {
     }
 
     private void updateInputGross() {
+        EditText inputGross = (EditText) findViewById(R.id.inputGross);
+        if(inputGross.hasFocus()){
+            return;
+        }
+        BigDecimal inputNet = getInputNet();
+        UKTaxCalculator taxCalculator = new UKTaxCalculator();
+        BigDecimal valueGross = taxCalculator.getUKNet(inputNet);
+        setInputGross(valueGross.doubleValue());
     }
 
     private void setInitialValues() {
@@ -84,6 +96,8 @@ public class IncomeTaxComparator extends AppCompatActivity {
     private void setInputDefaults() {
         BigDecimal grossDefault = BigDecimal.valueOf(30000.00);
         setInputGross(grossDefault.doubleValue());
+        EditText inputGross = (EditText) findViewById(R.id.inputGross);
+        inputGross.setSelection(grossDefault.toString().length());
         UKTaxCalculator taxCalculator = new UKTaxCalculator();
         BigDecimal netDefault = taxCalculator.getUKNet(grossDefault);
         setInputNet(netDefault.doubleValue());
