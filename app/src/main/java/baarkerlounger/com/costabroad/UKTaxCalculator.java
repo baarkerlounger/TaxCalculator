@@ -29,8 +29,7 @@ class UKTaxCalculator {
         }
 
         if(net.compareTo(NET_HIGHER_RATE_THRESHOLD) <= 0){
-            gross = (net.subtract(INITIAL_TAX_FREE_THRESHOLD)).add((net.subtract(INITIAL_TAX_FREE_THRESHOLD)).multiply(BASIC_RATE))
-                    .divide((BigDecimal.valueOf(100).subtract(BASIC_RATE)));
+            gross = net.add((net.multiply(BASIC_RATE)).divide((BigDecimal.valueOf(100).subtract(BASIC_RATE))));
         }
 
 
