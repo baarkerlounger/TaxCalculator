@@ -17,6 +17,7 @@ public class IncomeTaxComparator extends AppCompatActivity {
 
     EditText inputNet;
     EditText inputGross;
+    UKTaxCalculator taxCalculator = new UKTaxCalculator();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +74,6 @@ public class IncomeTaxComparator extends AppCompatActivity {
     private void updateInputNet() {
         if(!inputNet.hasFocus()){
             BigDecimal inputGross = getInputGross();
-            UKTaxCalculator taxCalculator = new UKTaxCalculator();
             BigDecimal valueNet = taxCalculator.getUKNet(inputGross);
             setInputNet(valueNet.doubleValue());
         }
@@ -82,7 +82,6 @@ public class IncomeTaxComparator extends AppCompatActivity {
     private void updateInputGross() {
         if(!inputGross.hasFocus()){
             BigDecimal inputNet = getInputNet();
-            UKTaxCalculator taxCalculator = new UKTaxCalculator();
             BigDecimal valueGross = taxCalculator.getUKGross(inputNet);
             setInputGross(valueGross.doubleValue());
         }
@@ -95,7 +94,6 @@ public class IncomeTaxComparator extends AppCompatActivity {
     private void setInputDefaults() {
         BigDecimal grossDefault = BigDecimal.valueOf(30000.00);
         setInputGross(grossDefault.doubleValue());
-        UKTaxCalculator taxCalculator = new UKTaxCalculator();
         BigDecimal netDefault = taxCalculator.getUKNet(grossDefault);
         setInputNet(netDefault.doubleValue());
     }
