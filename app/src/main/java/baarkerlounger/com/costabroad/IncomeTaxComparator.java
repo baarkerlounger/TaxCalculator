@@ -15,8 +15,8 @@ import java.text.ParseException;
 
 public class IncomeTaxComparator extends AppCompatActivity {
 
-    EditText inputNet = (EditText) findViewById(R.id.inputNet);
-    EditText inputGross = (EditText) findViewById(R.id.inputGross);
+    EditText inputNet;
+    EditText inputGross;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +28,8 @@ public class IncomeTaxComparator extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_income_tax_comparator, menu);
+        inputNet = (EditText) findViewById(R.id.inputNet);
+        inputGross = (EditText) findViewById(R.id.inputGross);
         setInitialValues();
         setTextBoxHandlers();
 
@@ -81,7 +83,7 @@ public class IncomeTaxComparator extends AppCompatActivity {
         if(!inputGross.hasFocus()){
             BigDecimal inputNet = getInputNet();
             UKTaxCalculator taxCalculator = new UKTaxCalculator();
-            BigDecimal valueGross = taxCalculator.getUKNet(inputNet);
+            BigDecimal valueGross = taxCalculator.getUKGross(inputNet);
             setInputGross(valueGross.doubleValue());
         }
     }
