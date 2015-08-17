@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * Class to calculate Gross and Net income based on UK income tax system
  */
-class UKTaxCalculator {
+public class UKTaxCalculator {
 
     //Gross to Net Values
     final private static BigDecimal INITIAL_TAX_FREE_THRESHOLD = BigDecimal.valueOf(10600);
@@ -21,17 +21,20 @@ class UKTaxCalculator {
 
     BigDecimal getUKGross(BigDecimal net){
 
-        BigDecimal gross = BigDecimal.valueOf(0);
         BigDecimal TAX_FREE_THRESHOLD = INITIAL_TAX_FREE_THRESHOLD;
 
         if(net.compareTo(TAX_FREE_THRESHOLD) <= 0){
             return net;
         }
 
-        if(net.compareTo(NET_HIGHER_RATE_THRESHOLD) <= 0){
-            gross = net.add((net.multiply(BASIC_RATE)).divide((BigDecimal.valueOf(100).subtract(BASIC_RATE)), 2, BigDecimal.ROUND_HALF_UP));
-        }
+        BigDecimal testNet = BigDecimal.valueOf(0);
+        BigDecimal gross = net;
 
+        while(net.compareTo(testNet) != 0){
+            testNet = getUKNet(gross);
+            gross = gross.add(BigDecimal.valueOf(0.01));
+        }
+        gross = gross.subtract(BigDecimal.valueOf(0.01));
         return gross;
     }
 
