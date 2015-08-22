@@ -24,10 +24,11 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
     //Net to Gross values
     final private static BigDecimal NET_HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(27612);
     final private static BigDecimal NET_ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(78643);
-    final private static BigDecimal AMOUNT_UNDER_HIGHER_RATE = BigDecimal.valueOf(4253);
     final private static BigDecimal NET_TAX_FREE_REDUCTION_THRESHOLD = BigDecimal.valueOf(70613);
+    final private static BigDecimal NET_NI_LOWER_THRESHOLD = NI_LOWER_THRESHOLD.multiply(NI_LOWER_RATE);
+    final private static BigDecimal NET_NI_HIGHER_THRESHOLD = NI_HIGHER_THRESHOLD.multiply(NI_HIGHER_RATE);
 
-    private boolean NI;
+    final private boolean NI;
 
     //Constructor - Determines whether National Insurance should be included or not
     UKTaxCalculator(boolean NI){this.NI = NI;}
@@ -35,14 +36,14 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
     public BigDecimal getGross(BigDecimal net){
 
-        BigDecimal step1;
-        BigDecimal gross = BigDecimal.valueOf(0);
+        BigDecimal gross;
+        BigDecimal niAmount = BigDecimal.ZERO;
 
         //Check if TAX Free amount needs to be reduced
         BigDecimal taxFreeThreshold = adjustTaxFreeThreshold(net, NET_TAX_FREE_REDUCTION_THRESHOLD);
 
         if(net.compareTo(taxFreeThreshold) <= 0){
-            return gross = net;
+            gross = net;
         }
         //Basic Rate
         else if(net.compareTo(NET_HIGHER_RATE_THRESHOLD) <= 0){
@@ -55,6 +56,17 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         //Basic Rate + Higher Rate + Additional Rate
         else{
             gross = calculateAdditionalGrossFromNet(net, taxFreeThreshold);
+        }
+
+        //If National Insurance is included
+        if(NI){
+            if(net.compareTo(NET_NI_HIGHER_THRESHOLD) >= 0){
+                niAmount = reversePercentage(net, NI_HIGHER_RATE).subtract(net);
+            }
+            else if(net.compareTo(NET_NI_LOWER_THRESHOLD) >= 0){
+                niAmount = reversePercentage(net, NI_LOWER_RATE).subtract(net);
+            }
+            gross = gross.add(niAmount);
         }
 
         return gross;
@@ -114,7 +126,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         return net;
     }
 
-    BigDecimal adjustTaxFreeThreshold (BigDecimal salary, BigDecimal Threshold){
+    private BigDecimal adjustTaxFreeThreshold (BigDecimal salary, BigDecimal Threshold){
 
         BigDecimal TAX_FREE_THRESHOLD = INITIAL_TAX_FREE_THRESHOLD;
 
@@ -131,11 +143,10 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         return  TAX_FREE_THRESHOLD;
     }
 
-    BigDecimal calculateBasicGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
+    private BigDecimal calculateBasicGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
 
         BigDecimal step1;
         BigDecimal step2;
-        BigDecimal step3;
 
         //Get taxable Net
         step1 = net.subtract(taxFreeThreshold);
@@ -144,25 +155,24 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         return (step2.add(taxFreeThreshold));
     }
 
-    BigDecimal calculateHigherGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
+    private BigDecimal calculateHigherGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
         BigDecimal amountOverHigher = net.subtract(NET_HIGHER_RATE_THRESHOLD);
         BigDecimal basicGross = calculateBasicGrossFromNet(amountOverHigher, taxFreeThreshold);
         BigDecimal higherGross = reversePercentage(amountOverHigher, HIGHER_RATE);
         return basicGross.add(higherGross);
     }
 
-    BigDecimal calculateAdditionalGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
+    private BigDecimal calculateAdditionalGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
         BigDecimal amountOverAdditional = net.subtract(NET_ADDITIONAL_RATE_THRESHOLD);
         BigDecimal higherGross = calculateHigherGrossFromNet(amountOverAdditional, taxFreeThreshold);
         BigDecimal additionalGross = reversePercentage(amountOverAdditional, ADDITIONAL_RATE);
         return higherGross.add(additionalGross);
     }
 
-    BigDecimal reversePercentage(BigDecimal amount, BigDecimal rate){
+    private BigDecimal reversePercentage(BigDecimal amount, BigDecimal rate){
 
         BigDecimal step1;
         BigDecimal step2;
-        BigDecimal step3;
 
         //Get 1% of Original
         step1 = amount.divide((BigDecimal.valueOf(1).subtract(rate)), 2, BigDecimal.ROUND_HALF_UP);

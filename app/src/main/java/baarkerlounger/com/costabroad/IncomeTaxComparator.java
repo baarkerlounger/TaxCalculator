@@ -15,9 +15,9 @@ import java.text.ParseException;
 
 public class IncomeTaxComparator extends AppCompatActivity {
 
-    EditText inputNet;
-    EditText inputGross;
-    TaxCalculatorInterface taxCalculator = new UKTaxCalculator(false);
+    private EditText inputNet;
+    private EditText inputGross;
+    private TaxCalculatorInterface taxCalculator = new UKTaxCalculator(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
