@@ -9,7 +9,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
     //Gross to Net Values
     final private static BigDecimal INITIAL_TAX_FREE_THRESHOLD = BigDecimal.valueOf(10600);
-    final private static BigDecimal HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(31865);
+    final private static BigDecimal HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(31785);
     final private static BigDecimal ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(150000);
     final private static BigDecimal BASIC_RATE = BigDecimal.valueOf(0.2);
     final private static BigDecimal HIGHER_RATE = BigDecimal.valueOf(0.4);
@@ -22,7 +22,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
 
     //Net to Gross values
-    final private static BigDecimal NET_HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(27612);
+    final private static BigDecimal NET_HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(36028);
     final private static BigDecimal NET_ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(78643);
     final private static BigDecimal NET_TAX_FREE_REDUCTION_THRESHOLD = BigDecimal.valueOf(70613);
     final private static BigDecimal NET_NI_LOWER_THRESHOLD = NI_LOWER_THRESHOLD.multiply(NI_LOWER_RATE);
@@ -31,7 +31,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
     final private boolean NI;
 
     //Constructor - Determines whether National Insurance should be included or not
-    UKTaxCalculator(boolean NI){this.NI = NI;}
+    public UKTaxCalculator(boolean NI){this.NI = NI;}
 
 
     public BigDecimal getGross(BigDecimal net){
@@ -122,7 +122,6 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
             }
             net = net.subtract(niAmount);
         }
-
         return net;
     }
 
@@ -157,7 +156,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
     private BigDecimal calculateHigherGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
         BigDecimal amountOverHigher = net.subtract(NET_HIGHER_RATE_THRESHOLD);
-        BigDecimal basicGross = calculateBasicGrossFromNet(amountOverHigher, taxFreeThreshold);
+        BigDecimal basicGross = calculateBasicGrossFromNet(NET_HIGHER_RATE_THRESHOLD, taxFreeThreshold);
         BigDecimal higherGross = reversePercentage(amountOverHigher, HIGHER_RATE);
         return basicGross.add(higherGross);
     }
@@ -171,14 +170,9 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
     private BigDecimal reversePercentage(BigDecimal amount, BigDecimal rate){
 
-        BigDecimal step1;
-        BigDecimal step2;
-
         //Get 1% of Original
-        step1 = amount.divide((BigDecimal.valueOf(1).subtract(rate)), 2, BigDecimal.ROUND_HALF_UP);
-        //Multiply by 100% to get Original
-        step2 = step1.multiply(BigDecimal.valueOf(1));
-        return step2;
+        BigDecimal divisor = (BigDecimal.valueOf(1).subtract(rate));
+        return amount.divide(divisor, 2, BigDecimal.ROUND_HALF_UP);
     }
 }
 
