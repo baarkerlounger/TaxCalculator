@@ -36,30 +36,25 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
     public BigDecimal getGross(BigDecimal net){
 
         BigDecimal step1;
-        BigDecimal step2;
-        BigDecimal step3;
         BigDecimal gross = BigDecimal.valueOf(0);
 
         //Check if TAX Free amount needs to be reduced
-        BigDecimal TAX_FREE_THRESHOLD = adjustTaxFreeThreshold(net, NET_TAX_FREE_REDUCTION_THRESHOLD);
+        BigDecimal taxFreeThreshold = adjustTaxFreeThreshold(net, NET_TAX_FREE_REDUCTION_THRESHOLD);
 
-        if(net.compareTo(TAX_FREE_THRESHOLD) <= 0){
-            return net;
+        if(net.compareTo(taxFreeThreshold) <= 0){
+            return gross = net;
         }
-
         //Basic Rate
-        if(net.compareTo(NET_HIGHER_RATE_THRESHOLD) <= 0){
-            //Get taxable Net
-            step1 = net.subtract(TAX_FREE_THRESHOLD);
-            //Divide by 80% to get 1% of Original
-            step2 = step1.divide((BigDecimal.valueOf(1).subtract(BASIC_RATE)), 2, BigDecimal.ROUND_HALF_UP);
-            //Multiply by 100% to get Original
-            step3 = step2.multiply(BigDecimal.valueOf(1));
-            gross = step3.add(TAX_FREE_THRESHOLD);
+        else if(net.compareTo(NET_HIGHER_RATE_THRESHOLD) <= 0){
+            gross = calculateBasicGrossFromNet(net, taxFreeThreshold);
         }
         //Basic Rate + Higher Rate
         else if(net.compareTo(NET_ADDITIONAL_RATE_THRESHOLD) <= 0) {
-            step1 = NET_ADDITIONAL_RATE_THRESHOLD.subtract(AMOUNT_UNDER_HIGHER_RATE);
+            gross = calculateHigherGrossFromNet(net, taxFreeThreshold);
+        }
+        //Basic Rate + Higher Rate + Additional Rate
+        else{
+            gross = calculateAdditionalGrossFromNet(net, taxFreeThreshold);
         }
 
         return gross;
@@ -73,9 +68,9 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
         //For every GBP2 over 100,000 earned, Tax Free Allowance reduces by GBP1
         //Check if TAX Free amount needs to be reduced
-        BigDecimal TAX_FREE_THRESHOLD = adjustTaxFreeThreshold(gross, TAX_FREE_REDUCTION_THRESHOLD);
+        BigDecimal taxFreeThreshold = adjustTaxFreeThreshold(gross, TAX_FREE_REDUCTION_THRESHOLD);
 
-        BigDecimal taxable = gross.subtract(TAX_FREE_THRESHOLD);
+        BigDecimal taxable = gross.subtract(taxFreeThreshold);
 
         //If Gross is less than Tax Free Threshold do nothing
         //compareTo method returns 0 for equal to operator
@@ -136,6 +131,45 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         return  TAX_FREE_THRESHOLD;
     }
 
+    BigDecimal calculateBasicGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
+
+        BigDecimal step1;
+        BigDecimal step2;
+        BigDecimal step3;
+
+        //Get taxable Net
+        step1 = net.subtract(taxFreeThreshold);
+        //Divide by 80% to get 1% of Original and Multiply by 100% to get original
+        step2 = reversePercentage(step1, BASIC_RATE);
+        return (step2.add(taxFreeThreshold));
+    }
+
+    BigDecimal calculateHigherGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
+        BigDecimal amountOverHigher = net.subtract(NET_HIGHER_RATE_THRESHOLD);
+        BigDecimal basicGross = calculateBasicGrossFromNet(amountOverHigher, taxFreeThreshold);
+        BigDecimal higherGross = reversePercentage(amountOverHigher, HIGHER_RATE);
+        return basicGross.add(higherGross);
+    }
+
+    BigDecimal calculateAdditionalGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
+        BigDecimal amountOverAdditional = net.subtract(NET_ADDITIONAL_RATE_THRESHOLD);
+        BigDecimal higherGross = calculateHigherGrossFromNet(amountOverAdditional, taxFreeThreshold);
+        BigDecimal additionalGross = reversePercentage(amountOverAdditional, ADDITIONAL_RATE);
+        return higherGross.add(additionalGross);
+    }
+
+    BigDecimal reversePercentage(BigDecimal amount, BigDecimal rate){
+
+        BigDecimal step1;
+        BigDecimal step2;
+        BigDecimal step3;
+
+        //Get 1% of Original
+        step1 = amount.divide((BigDecimal.valueOf(1).subtract(rate)), 2, BigDecimal.ROUND_HALF_UP);
+        //Multiply by 100% to get Original
+        step2 = step1.multiply(BigDecimal.valueOf(1));
+        return step2;
+    }
 }
 
 
