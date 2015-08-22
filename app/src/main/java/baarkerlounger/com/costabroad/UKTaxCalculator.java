@@ -25,15 +25,23 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
     final private static BigDecimal NET_HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(27612);
     final private static BigDecimal NET_ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(78643);
     final private static BigDecimal AMOUNT_UNDER_HIGHER_RATE = BigDecimal.valueOf(4253);
+    final private static BigDecimal NET_TAX_FREE_REDUCTION_THRESHOLD = BigDecimal.valueOf(70613);
+
+    private boolean NI;
+
+    //Constructor - Determines whether National Insurance should be included or not
+    UKTaxCalculator(boolean NI){this.NI = NI;}
 
 
-    public BigDecimal getGross(BigDecimal net, boolean NI){
+    public BigDecimal getGross(BigDecimal net){
 
-        BigDecimal TAX_FREE_THRESHOLD = INITIAL_TAX_FREE_THRESHOLD;
         BigDecimal step1;
         BigDecimal step2;
         BigDecimal step3;
         BigDecimal gross = BigDecimal.valueOf(0);
+
+        //Check if TAX Free amount needs to be reduced
+        BigDecimal TAX_FREE_THRESHOLD = adjustTaxFreeThreshold(net, NET_TAX_FREE_REDUCTION_THRESHOLD);
 
         if(net.compareTo(TAX_FREE_THRESHOLD) <= 0){
             return net;
@@ -51,29 +59,21 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         }
         //Basic Rate + Higher Rate
         else if(net.compareTo(NET_ADDITIONAL_RATE_THRESHOLD) <= 0) {
-
+            step1 = NET_ADDITIONAL_RATE_THRESHOLD.subtract(AMOUNT_UNDER_HIGHER_RATE);
         }
 
         return gross;
     }
 
-    public BigDecimal getNet(BigDecimal gross, boolean NI){
+    public BigDecimal getNet(BigDecimal gross){
 
         BigDecimal net;
         BigDecimal tax;
         BigDecimal niAmount = BigDecimal.ZERO;
-        BigDecimal TAX_FREE_THRESHOLD = INITIAL_TAX_FREE_THRESHOLD;
 
         //For every GBP2 over 100,000 earned, Tax Free Allowance reduces by GBP1
-        if (gross.compareTo(TAX_FREE_REDUCTION_THRESHOLD) > 0){
-            BigDecimal amountOverReductionThreshold = gross.subtract(TAX_FREE_REDUCTION_THRESHOLD);
-            if (amountOverReductionThreshold.compareTo(TAX_FREE_THRESHOLD) > 0) {
-                TAX_FREE_THRESHOLD = TAX_FREE_THRESHOLD.subtract(amountOverReductionThreshold);
-            }
-            else{
-                TAX_FREE_THRESHOLD = BigDecimal.ZERO;
-            }
-        }
+        //Check if TAX Free amount needs to be reduced
+        BigDecimal TAX_FREE_THRESHOLD = adjustTaxFreeThreshold(gross, TAX_FREE_REDUCTION_THRESHOLD);
 
         BigDecimal taxable = gross.subtract(TAX_FREE_THRESHOLD);
 
@@ -118,6 +118,24 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
         return net;
     }
+
+    BigDecimal adjustTaxFreeThreshold (BigDecimal salary, BigDecimal Threshold){
+
+        BigDecimal TAX_FREE_THRESHOLD = INITIAL_TAX_FREE_THRESHOLD;
+
+        //For every GBP2 over 100,000 earned, Tax Free Allowance reduces by GBP1
+        if (salary.compareTo(Threshold) > 0){
+            BigDecimal amountOverReductionThreshold = salary.subtract(Threshold);
+            if (amountOverReductionThreshold.compareTo(INITIAL_TAX_FREE_THRESHOLD) > 0) {
+                TAX_FREE_THRESHOLD = TAX_FREE_THRESHOLD.subtract(amountOverReductionThreshold);
+            }
+            else{
+                TAX_FREE_THRESHOLD = BigDecimal.ZERO;
+            }
+        }
+        return  TAX_FREE_THRESHOLD;
+    }
+
 }
 
 

@@ -7,10 +7,10 @@ import java.math.BigDecimal;
  */
 public interface TaxCalculatorInterface {
 
-    BigDecimal getNet(BigDecimal gross, boolean NI);
+    BigDecimal getNet(BigDecimal gross);
     //Takes Gross income and returns Net income
 
-    BigDecimal getGross(BigDecimal net, boolean NI);
+    BigDecimal getGross(BigDecimal net);
     //Takes Net Income and returns gross income
 
 }
