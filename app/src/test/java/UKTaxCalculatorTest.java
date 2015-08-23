@@ -12,7 +12,6 @@ import baarkerlounger.com.costabroad.UKTaxCalculator;
  */
 public class UKTaxCalculatorTest {
 
-
     @Test
     public void testBasic(){
         //Test from Gross to Net and Back

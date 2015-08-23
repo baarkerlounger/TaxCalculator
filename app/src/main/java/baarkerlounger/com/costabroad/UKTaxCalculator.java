@@ -22,9 +22,10 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
 
     //Net to Gross values
-    final private static BigDecimal NET_HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(36028);
-    final private static BigDecimal NET_ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(78643);
-    final private static BigDecimal NET_TAX_FREE_REDUCTION_THRESHOLD = BigDecimal.valueOf(70613);
+    final private static BigDecimal INITIAL_NET_HIGHER_RATE_THRESHOLD = BigDecimal.valueOf(36028);
+    private static BigDecimal NET_HIGHER_RATE_THRESHOLD = INITIAL_NET_HIGHER_RATE_THRESHOLD;
+    final private static BigDecimal NET_ADDITIONAL_RATE_THRESHOLD = BigDecimal.valueOf(96357);
+    final private static BigDecimal NET_TAX_FREE_REDUCTION_THRESHOLD = BigDecimal.valueOf(70597);
     final private static BigDecimal NET_NI_LOWER_THRESHOLD = NI_LOWER_THRESHOLD.multiply(NI_LOWER_RATE);
     final private static BigDecimal NET_NI_HIGHER_THRESHOLD = NI_HIGHER_THRESHOLD.multiply(NI_HIGHER_RATE);
 
@@ -95,9 +96,9 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         }
         //If Basic Rate + Higher Rate
         else if(taxable.compareTo(ADDITIONAL_RATE_THRESHOLD) <= 0){
-                  //Basic Rate Component
+            //Basic Rate Component
             tax = (HIGHER_RATE_THRESHOLD.multiply(BASIC_RATE));
-                 //Higher Rate Component
+            //Higher Rate Component
             tax = tax.add(((taxable.subtract(HIGHER_RATE_THRESHOLD)).multiply(HIGHER_RATE)));
         }
         //If Basic Rate + Higher Rate + Additional Rate
@@ -130,13 +131,16 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         BigDecimal TAX_FREE_THRESHOLD = INITIAL_TAX_FREE_THRESHOLD;
 
         //For every GBP2 over 100,000 earned, Tax Free Allowance reduces by GBP1
+        //This also reduces the NET_HIGHER_RATE_THRESHOLD
         if (salary.compareTo(Threshold) > 0){
             BigDecimal amountOverReductionThreshold = (salary.subtract(Threshold)).multiply(BigDecimal.valueOf(0.5));
             if (amountOverReductionThreshold.compareTo(INITIAL_TAX_FREE_THRESHOLD) < 0) {
                 TAX_FREE_THRESHOLD = TAX_FREE_THRESHOLD.subtract(amountOverReductionThreshold);
+                NET_HIGHER_RATE_THRESHOLD = INITIAL_NET_HIGHER_RATE_THRESHOLD.subtract(amountOverReductionThreshold);
             }
             else{
                 TAX_FREE_THRESHOLD = BigDecimal.ZERO;
+                NET_HIGHER_RATE_THRESHOLD = INITIAL_NET_HIGHER_RATE_THRESHOLD.subtract(INITIAL_TAX_FREE_THRESHOLD);
             }
         }
         return  TAX_FREE_THRESHOLD;
@@ -163,7 +167,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
     private BigDecimal calculateAdditionalGrossFromNet(BigDecimal net, BigDecimal taxFreeThreshold){
         BigDecimal amountOverAdditional = net.subtract(NET_ADDITIONAL_RATE_THRESHOLD);
-        BigDecimal higherGross = calculateHigherGrossFromNet(amountOverAdditional, taxFreeThreshold);
+        BigDecimal higherGross = calculateHigherGrossFromNet(NET_ADDITIONAL_RATE_THRESHOLD, taxFreeThreshold);
         BigDecimal additionalGross = reversePercentage(amountOverAdditional, ADDITIONAL_RATE);
         return higherGross.add(additionalGross);
     }
@@ -175,5 +179,4 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         return amount.divide(divisor, 2, BigDecimal.ROUND_HALF_UP);
     }
 }
-
 
