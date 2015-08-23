@@ -34,7 +34,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
     //Constructor - Determines whether National Insurance should be included or not
     public UKTaxCalculator(boolean NI){this.NI = NI;}
 
-
+    @Override
     public BigDecimal getGross(BigDecimal net){
 
         BigDecimal gross;
@@ -73,6 +73,7 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
         return gross;
     }
 
+    @Override
     public BigDecimal getNet(BigDecimal gross){
 
         BigDecimal net;
