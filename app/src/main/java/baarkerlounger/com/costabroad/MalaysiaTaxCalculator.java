@@ -3,21 +3,20 @@ package baarkerlounger.com.costabroad;
 import java.math.BigDecimal;
 
 /**
- *Created by dan on 23/08/15.
+ *Created by dan on 23/08/15
  */
-public class SingaporeTaxCalculator implements TaxCalculatorInterface {
+public class MalaysiaTaxCalculator implements TaxCalculatorInterface {
 
     @Override
     public BigDecimal getNet(BigDecimal gross) {
 
-        final BigDecimal level1 = BigDecimal.valueOf(20000);
-        final BigDecimal level2 = BigDecimal.valueOf(30000);
-        final BigDecimal level3 = BigDecimal.valueOf(40000);
-        final BigDecimal level4 = BigDecimal.valueOf(80000);
-        final BigDecimal level5 = BigDecimal.valueOf(120000);
-        final BigDecimal level6 = BigDecimal.valueOf(160000);
-        final BigDecimal level7 = BigDecimal.valueOf(200000);
-        final BigDecimal level8 = BigDecimal.valueOf(320000);
+        final BigDecimal level1 = BigDecimal.valueOf(5001);
+        final BigDecimal level2 = BigDecimal.valueOf(10001);
+        final BigDecimal level3 = BigDecimal.valueOf(20001);
+        final BigDecimal level4 = BigDecimal.valueOf(35001);
+        final BigDecimal level5 = BigDecimal.valueOf(50001);
+        final BigDecimal level6 = BigDecimal.valueOf(70001);
+        final BigDecimal level7 = BigDecimal.valueOf(100000);
 
         BigDecimal tax;
         BigDecimal taxBase;
@@ -25,40 +24,35 @@ public class SingaporeTaxCalculator implements TaxCalculatorInterface {
         BigDecimal percentageAppliedSalary;
         BigDecimal net;
 
-        if(gross.compareTo(level8) > 0){
-            percentageAppliedSalary = gross.subtract(level8);
-            taxPercentage           = BigDecimal.valueOf(0.2);
-            taxBase                 = BigDecimal.valueOf(42350);
-        }
-        else if(gross.compareTo(level7) > 0){
+        if(gross.compareTo(level7) > 0){
             percentageAppliedSalary = gross.subtract(level7);
-            taxPercentage           = BigDecimal.valueOf(0.18);
-            taxBase                 = BigDecimal.valueOf(20750);
+            taxPercentage           = BigDecimal.valueOf(0.26);
+            taxBase                 = BigDecimal.valueOf(13850);
         }
         else if(gross.compareTo(level6) > 0){
             percentageAppliedSalary = gross.subtract(level6);
-            taxPercentage           = BigDecimal.valueOf(0.17);
-            taxBase                 = BigDecimal.valueOf(13950);
+            taxPercentage           = BigDecimal.valueOf(0.24);
+            taxBase                 = BigDecimal.valueOf(6650);
         }
         else if(gross.compareTo(level5) > 0){
             percentageAppliedSalary = gross.subtract(level5);
-            taxPercentage           = BigDecimal.valueOf(0.15);
-            taxBase                 = BigDecimal.valueOf(7950);
+            taxPercentage           = BigDecimal.valueOf(0.19);
+            taxBase                 = BigDecimal.valueOf(2850);
         }
         else if(gross.compareTo(level4) > 0){
             percentageAppliedSalary = gross.subtract(level4);
-            taxPercentage           = BigDecimal.valueOf(0.115);
-            taxBase                 = BigDecimal.valueOf(3350);
+            taxPercentage           = BigDecimal.valueOf(0.11);
+            taxBase                 = BigDecimal.valueOf(1200);
         }
         else if(gross.compareTo(level3) > 0){
             percentageAppliedSalary = gross.subtract(level3);
-            taxPercentage           = BigDecimal.valueOf(0.07);
-            taxBase                 = BigDecimal.valueOf(550);
+            taxPercentage           = BigDecimal.valueOf(0.006);
+            taxBase                 = BigDecimal.valueOf(300);
         }
         else if(gross.compareTo(level2) > 0){
             percentageAppliedSalary = gross.subtract(level2);
-            taxPercentage           = BigDecimal.valueOf(0.035);
-            taxBase                 = BigDecimal.valueOf(200);
+            taxPercentage           = BigDecimal.valueOf(0.02);
+            taxBase                 = BigDecimal.valueOf(100);
         }
         else if(gross.compareTo(level1) > 0){
             percentageAppliedSalary = gross.subtract(level1);
@@ -79,7 +73,7 @@ public class SingaporeTaxCalculator implements TaxCalculatorInterface {
         }
 
         // TODO: 23/08/15
-        //Add CPF Contribution
+        //Add National Insurance Contribution
 
         return net;
     }
