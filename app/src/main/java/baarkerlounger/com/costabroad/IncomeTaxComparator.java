@@ -17,7 +17,7 @@ public class IncomeTaxComparator extends AppCompatActivity {
 
     private EditText inputNet;
     private EditText inputGross;
-    private TaxCalculatorInterface taxCalculator = new UKTaxCalculator(false);
+    private TaxCalculatorInterface taxCalculator = new UKTaxCalculator(true);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
