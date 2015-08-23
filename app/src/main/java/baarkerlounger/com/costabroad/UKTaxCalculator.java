@@ -131,8 +131,8 @@ public class UKTaxCalculator implements TaxCalculatorInterface {
 
         //For every GBP2 over 100,000 earned, Tax Free Allowance reduces by GBP1
         if (salary.compareTo(Threshold) > 0){
-            BigDecimal amountOverReductionThreshold = salary.subtract(Threshold);
-            if (amountOverReductionThreshold.compareTo(INITIAL_TAX_FREE_THRESHOLD) > 0) {
+            BigDecimal amountOverReductionThreshold = (salary.subtract(Threshold)).multiply(BigDecimal.valueOf(0.5));
+            if (amountOverReductionThreshold.compareTo(INITIAL_TAX_FREE_THRESHOLD) < 0) {
                 TAX_FREE_THRESHOLD = TAX_FREE_THRESHOLD.subtract(amountOverReductionThreshold);
             }
             else{

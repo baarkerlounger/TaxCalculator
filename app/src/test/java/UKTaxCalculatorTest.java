@@ -49,7 +49,24 @@ public class UKTaxCalculatorTest {
         Assert.assertEquals(grossInput.doubleValue(), gross.doubleValue());
         net = taxCalculator.getNet(gross);
         Assert.assertEquals(net.doubleValue(), netInput.doubleValue());
+    }
 
+    @Test
+    public void testAdditional(){
+        //Test from Gross to Net and Back
+        TaxCalculatorInterface taxCalculator = new UKTaxCalculator(false);
+        BigDecimal grossInput = BigDecimal.valueOf(235000.00);
+        BigDecimal net = taxCalculator.getNet(grossInput);
+        Assert.assertEquals(143107.00, net.doubleValue());
+        BigDecimal gross = taxCalculator.getGross(net);
+        Assert.assertEquals(gross.doubleValue(), grossInput.doubleValue());
+
+        //Test from Net to Gross and Back
+        BigDecimal netInput = BigDecimal.valueOf(143107.00);
+        gross = taxCalculator.getGross(netInput);
+        Assert.assertEquals(grossInput.doubleValue(), gross.doubleValue());
+        net = taxCalculator.getNet(gross);
+        Assert.assertEquals(net.doubleValue(), netInput.doubleValue());
     }
 
 
